@@ -103,8 +103,10 @@ legend {
   background-repeat: no-repeat;
   background-position-y: 50%;
   background-position-x: 1.25rem;
-
+  color: var(--secondary);
   font-size: 1.5rem;
+  cursor: pointer;
+  border: 2px solid transparent;
 }
 
 .bill-amount input {
@@ -208,6 +210,16 @@ button {
   font-size: 1.5rem;
   text-align: end;
   box-sizing: border-box;
+  color: var(--secondary);
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.custom input:focus,
+.bill-amount input:focus,
+.people-number input:focus {
+  outline: none;
+  border: 2px solid var(--primary);
 }
 
 legend {
