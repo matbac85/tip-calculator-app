@@ -1,0 +1,63 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+
+:root {
+  --primary: hsl(172, 67%, 45%);
+  --secondary: hsl(183, 100%, 15%);
+  --neutral-500: hsl(186, 14%, 43%);
+  --neutral-400: hsl(184, 14%, 56%);
+  --neutral-300: hsl(185, 41%, 84%);
+  --neutral-200: hsl(189, 41%, 97%);
+  --neutral-100: hsl(0, 0%, 100%);
+  --accent: hsl(13, 70%, 61%);
+  --hover: hsl(172, 61%, 77%);
+}
+
+body {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-style: normal;
+}
