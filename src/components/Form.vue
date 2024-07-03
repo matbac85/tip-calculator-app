@@ -4,42 +4,52 @@
       <fieldset>
         <div class="bill-amount">
           <label for="bill">Bill</label>
-          <input type="number" name="bill" id="bill" />
+          <input type="number" name="bill" id="bill" v-model="bill" />
+          <p class="error-message">{{ billError }}</p>
         </div>
       </fieldset>
       <fieldset>
         <legend>Select Tip %</legend>
         <div class="preferences">
-          <div class="preference">
-            <input type="radio" name="tip" id="tip-5" value="5" selected />
+          <div class="preference" :class="{ selected: selectedTip === '5' }">
+            <input type="radio" name="tip" id="tip-5" value="5" selected v-model="selectedTip" />
             <label for="tip-5" class="tip-button">5%</label>
           </div>
-          <div class="preference">
-            <input type="radio" name="tip" id="tip-10" value="10" />
+          <div class="preference" :class="{ selected: selectedTip === '10' }">
+            <input type="radio" name="tip" id="tip-10" value="10" v-model="selectedTip" />
             <label for="tip-10" class="tip-button">10%</label>
           </div>
-          <div class="preference">
-            <input type="radio" name="tip" id="tip-15" value="15" />
+          <div class="preference" :class="{ selected: selectedTip === '15' }">
+            <input type="radio" name="tip" id="tip-15" value="15" v-model="selectedTip" />
             <label for="tip-15" class="tip-button">15%</label>
           </div>
-          <div class="preference">
-            <input type="radio" name="tip" id="tip-25" value="25" />
+          <div class="preference" :class="{ selected: selectedTip === '25' }">
+            <input type="radio" name="tip" id="tip-25" value="25" v-model="selectedTip" />
             <label for="tip-25" class="tip-button">25%</label>
           </div>
-          <div class="preference">
-            <input type="radio" name="tip" id="tip-50" value="50" />
+          <div class="preference" :class="{ selected: selectedTip === '50' }">
+            <input type="radio" name="tip" id="tip-50" value="50" v-model="selectedTip" />
             <label for="tip-50" class="tip-button">50%</label>
           </div>
           <div class="custom">
             <label for="custom" class="sr-only">Custom</label>
-            <input type="number" name="tip" id="custom" min="0" max="100" placeholder="Custom" />
+            <input
+              type="number"
+              name="tip"
+              id="custom"
+              min="0"
+              max="100"
+              placeholder="Custom"
+              v-model="customTip"
+            />
           </div>
         </div>
       </fieldset>
       <fieldset>
         <div class="people-number">
           <label for="people-number">Number of People</label>
-          <input type="number" name="people-number" id="people-number" />
+          <input type="number" name="people-number" id="people-number" v-model="peopleNumber" />
+          <p class="error-message">{{ peopleNumberError }}</p>
         </div>
       </fieldset>
     </section>
@@ -47,19 +57,116 @@
       <div class="results">
         <div class="result">
           <p class="result-type">Tip Amount <span>/ person</span></p>
-          <output class="p" aria-live="polite" id="tip-amount-per-person">$0</output>
+          <output class="p" aria-live="polite" id="tip-amount-per-person"
+            >${{ tipAmountPerPerson.toFixed(2) }}</output
+          >
         </div>
         <div class="result">
           <p class="result-type">Total <span>/ person</span></p>
-          <output class="p" aria-live="polite" id="total-amount-per-person">$0</output>
+          <output class="p" aria-live="polite" id="total-amount-per-person"
+            >${{ totalAmountPerPerson.toFixed(2) }}</output
+          >
         </div>
       </div>
-      <button type="button" id="reset-btn">Reset</button>
+      <button type="button" id="reset-btn" :disabled="isFormIncomplete" @click="resetForm">
+        Reset
+      </button>
     </section>
   </form>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref, watch, computed } from 'vue'
+
+const bill = ref(null)
+const customTip = ref(null)
+const peopleNumber = ref(null)
+const tipAmountPerPerson = ref(0)
+const totalAmountPerPerson = ref(0)
+const selectedTip = ref(null)
+const peopleNumberError = ref(null)
+const billError = ref(null)
+
+const calculateTip = () => {
+  let tipPercentage = selectedTip.value
+    ? parseFloat(selectedTip.value)
+    : parseFloat(customTip.value)
+  if (isNaN(tipPercentage)) {
+    tipPercentage = 0
+  }
+  const tipAmount = (bill.value * tipPercentage) / 100
+  const totalAmount = bill.value + tipAmount
+  const numberOfPeople = peopleNumber.value || 1
+
+  tipAmountPerPerson.value = tipAmount / numberOfPeople
+  totalAmountPerPerson.value = totalAmount / numberOfPeople
+}
+
+const validateBill = (newVal) => {
+  if (newVal === '' || newVal === null) {
+    billError.value = ''
+  } else if (newVal === 0) {
+    billError.value = 'Can’t be zero'
+  } else if (newVal < 0) {
+    billError.value = 'Can’t be negative'
+  } else {
+    billError.value = ''
+  }
+}
+
+const validatePeopleNumber = (newVal) => {
+  if (newVal === '' || newVal === null) {
+    peopleNumberError.value = ''
+  } else if (newVal === 0) {
+    peopleNumberError.value = 'Can’t be zero'
+  } else if (newVal < 0) {
+    peopleNumberError.value = 'Can’t be negative'
+  } else if (!Number.isInteger(newVal)) {
+    peopleNumberError.value = 'Can’t be decimal'
+  } else {
+    peopleNumberError.value = ''
+  }
+}
+
+const resetCustomTip = () => {
+  customTip.value = null
+}
+
+const resetSelectedTip = () => {
+  selectedTip.value = null
+}
+
+const resetForm = () => {
+  bill.value = null
+  selectedTip.value = null
+  customTip.value = null
+  peopleNumber.value = null
+  peopleNumberError.value = null
+  billError.value = null
+  tipAmountPerPerson.value = 0
+  totalAmountPerPerson.value = 0
+}
+
+const isFormIncomplete = computed(() => {
+  return !bill.value || (!selectedTip.value && !customTip.value) || !peopleNumber.value
+})
+
+watch(customTip, (newVal) => {
+  if (newVal) {
+    resetSelectedTip()
+  }
+})
+
+watch(selectedTip, (newVal) => {
+  if (newVal) {
+    resetCustomTip()
+  }
+})
+
+watch([bill, selectedTip, customTip, peopleNumber], calculateTip)
+watch(bill, validateBill)
+watch(peopleNumber, validatePeopleNumber)
+</script>
 
 <style scoped>
 fieldset {
@@ -77,6 +184,17 @@ form {
   width: 100%;
   max-width: 57.5rem;
   box-shadow: 0px 32px 43px 0px rgba(79, 166, 175, 0.2007);
+}
+
+.people-number,
+.bill-amount {
+  position: relative;
+}
+
+.error-message {
+  position: absolute;
+  color: var(--accent);
+  right: 0;
 }
 
 .bill-amount,
@@ -257,9 +375,24 @@ legend {
   font-size: 0.8125rem;
 }
 
+.preference.selected,
+.preference.selected label {
+  background-color: var(--primary);
+  color: var(--secondary);
+}
+
 output {
   color: var(--primary);
   font-size: clamp(2rem, 1.502vw + 1.648rem, 3rem);
+  text-overflow: ellipsis; /* Ajoute des points de suspension pour le texte débordant */
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  max-width: 100%;
+}
+
+#reset-btn:disabled {
+  background-color: var(--disabled-bg);
+  color: var(--disabled-color);
+  cursor: not-allowed;
 }
 
 @media (min-width: 37.5rem) {

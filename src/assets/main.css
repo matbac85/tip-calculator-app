@@ -54,6 +54,8 @@ h6 {
   --neutral-100: hsl(0, 0%, 100%);
   --accent: hsl(13, 70%, 61%);
   --hover: hsl(172, 61%, 77%);
+  --disabled-bg: hsl(183, 78%, 24%);
+  --disabled-color: hsl(183, 100%, 15%);
 }
 
 body {
