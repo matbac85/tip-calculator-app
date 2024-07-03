@@ -6,6 +6,10 @@
 
 The app allows users to compute tip amounts and total amounts per person for shared bills. Below is a detailed explanation of its functionality:
 
+#### Try It Out
+
+Explore the app live [here](https://matbac85.github.io/tip-calculator-app/).
+
 #### Features and Input Validation
 
 1. **Bill Amount**:
@@ -29,14 +33,6 @@ The app allows users to compute tip amounts and total amounts per person for sha
 #### Functionality and Reset Button
 
 - **Reset Button**: A button clears all form fields once they are filled or selected. The button remains disabled until all necessary fields are filled or selected.
-
-#### Video Demonstration
-
-You can watch a video demonstration of the app [link_to_video](https://www.webmobilefirst.com/screencasts/XnBmmECaq7/).
-
-#### Try It Out
-
-Explore the app live [here](https://matbac85.github.io/tip-calculator-app/).
 
 #### Credits
 
