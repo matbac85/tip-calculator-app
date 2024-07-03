@@ -38,7 +38,9 @@
               name="tip"
               id="custom"
               min="0"
+              step="1"
               max="100"
+              inputmode="numeric"
               placeholder="Custom"
               v-model="customTip"
             />
@@ -128,6 +130,12 @@ const validatePeopleNumber = (newVal) => {
   }
 }
 
+const validateCustomTip = () => {
+  if (customTip.value !== null && customTip.value < 0) {
+    customTip.value = null // Réinitialiser la valeur si elle est négative
+  }
+}
+
 const resetCustomTip = () => {
   customTip.value = null
 }
@@ -166,6 +174,7 @@ watch(selectedTip, (newVal) => {
 watch([bill, selectedTip, customTip, peopleNumber], calculateTip)
 watch(bill, validateBill)
 watch(peopleNumber, validatePeopleNumber)
+watch(customTip, validateCustomTip)
 </script>
 
 <style scoped>
