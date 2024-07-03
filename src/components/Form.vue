@@ -295,7 +295,11 @@ button {
 }
 
 .preference input[type='radio'] {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
 }
 
 .preferences {
@@ -312,17 +316,29 @@ button {
   font-size: 1.5rem;
   display: flex;
   justify-content: center;
+  align-items: center; /* Centrer verticalement le contenu */
   padding: 0.375rem 0;
   border-radius: 5px;
+  cursor: pointer;
+  position: relative;
 }
 
-.preference,
 .preference label {
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centrer verticalement le texte */
+  width: 100%; /* S'assurer que le label prend toute la largeur du parent */
+  height: 100%;
+}
+
+.preference label:hover {
+  background-color: var(--primary);
+  color: var(--secondary);
 }
 
 .preference:hover,
-.preference label:hover {
+.preference.selected {
   background-color: var(--primary);
   color: var(--secondary);
 }
