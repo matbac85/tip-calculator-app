@@ -4,30 +4,36 @@
       <fieldset>
         <div class="bill-amount">
           <label for="bill">Bill</label>
-          <input type="number" name="bill" id="bill" v-model="bill" />
-          <p class="error-message">{{ billError }}</p>
+          <input
+            type="number"
+            name="bill"
+            id="bill"
+            v-model.number="bill"
+            :class="{ error: billError }"
+          />
+          <p class="error-message" v-if="billError">{{ billError }}</p>
         </div>
       </fieldset>
       <fieldset>
         <legend>Select Tip %</legend>
         <div class="preferences">
-          <div class="preference" :class="{ selected: selectedTip === '5' }">
-            <input type="radio" name="tip" id="tip-5" value="5" selected v-model="selectedTip" />
+          <div class="preference" :class="{ selected: selectedTip === 5 }">
+            <input type="radio" name="tip" id="tip-5" value="5" v-model="selectedTip" />
             <label for="tip-5" class="tip-button">5%</label>
           </div>
-          <div class="preference" :class="{ selected: selectedTip === '10' }">
+          <div class="preference" :class="{ selected: selectedTip === 10 }">
             <input type="radio" name="tip" id="tip-10" value="10" v-model="selectedTip" />
             <label for="tip-10" class="tip-button">10%</label>
           </div>
-          <div class="preference" :class="{ selected: selectedTip === '15' }">
+          <div class="preference" :class="{ selected: selectedTip === 15 }">
             <input type="radio" name="tip" id="tip-15" value="15" v-model="selectedTip" />
             <label for="tip-15" class="tip-button">15%</label>
           </div>
-          <div class="preference" :class="{ selected: selectedTip === '25' }">
+          <div class="preference" :class="{ selected: selectedTip === 25 }">
             <input type="radio" name="tip" id="tip-25" value="25" v-model="selectedTip" />
             <label for="tip-25" class="tip-button">25%</label>
           </div>
-          <div class="preference" :class="{ selected: selectedTip === '50' }">
+          <div class="preference" :class="{ selected: selectedTip === 50 }">
             <input type="radio" name="tip" id="tip-50" value="50" v-model="selectedTip" />
             <label for="tip-50" class="tip-button">50%</label>
           </div>
@@ -42,7 +48,7 @@
               max="100"
               inputmode="numeric"
               placeholder="Custom"
-              v-model="customTip"
+              v-model.number="customTip"
             />
           </div>
         </div>
@@ -50,8 +56,14 @@
       <fieldset>
         <div class="people-number">
           <label for="people-number">Number of People</label>
-          <input type="number" name="people-number" id="people-number" v-model="peopleNumber" />
-          <p class="error-message">{{ peopleNumberError }}</p>
+          <input
+            type="number"
+            name="people-number"
+            id="people-number"
+            v-model.number="peopleNumber"
+            :class="{ error: peopleNumberError }"
+          />
+          <p class="error-message" v-if="peopleNumberError">{{ peopleNumberError }}</p>
         </div>
       </fieldset>
     </section>
@@ -80,20 +92,18 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 
-const bill = ref(null)
+const bill = ref(0)
 const customTip = ref(null)
-const peopleNumber = ref(null)
+const peopleNumber = ref(1)
 const tipAmountPerPerson = ref(0)
 const totalAmountPerPerson = ref(0)
 const selectedTip = ref(null)
-const peopleNumberError = ref(null)
-const billError = ref(null)
+const peopleNumberError = ref('')
+const billError = ref('')
 
 const calculateTip = () => {
-  let tipPercentage = selectedTip.value
-    ? parseFloat(selectedTip.value)
-    : parseFloat(customTip.value)
-  if (isNaN(tipPercentage)) {
+  let tipPercentage = selectedTip.value !== null ? selectedTip.value : customTip.value || 0
+  if (isNaN(tipPercentage) || tipPercentage < 0) {
     tipPercentage = 0
   }
   const tipAmount = (bill.value * tipPercentage) / 100
@@ -107,10 +117,8 @@ const calculateTip = () => {
 const validateBill = (newVal) => {
   if (newVal === '' || newVal === null) {
     billError.value = ''
-  } else if (newVal === 0) {
-    billError.value = 'Can’t be zero'
-  } else if (newVal < 0) {
-    billError.value = 'Can’t be negative'
+  } else if (newVal <= 0) {
+    billError.value = newVal === 0 ? 'Can’t be zero' : 'Can’t be negative'
   } else {
     billError.value = ''
   }
@@ -119,10 +127,8 @@ const validateBill = (newVal) => {
 const validatePeopleNumber = (newVal) => {
   if (newVal === '' || newVal === null) {
     peopleNumberError.value = ''
-  } else if (newVal === 0) {
-    peopleNumberError.value = 'Can’t be zero'
-  } else if (newVal < 0) {
-    peopleNumberError.value = 'Can’t be negative'
+  } else if (newVal <= 0) {
+    peopleNumberError.value = newVal === 0 ? 'Can’t be zero' : 'Can’t be negative'
   } else if (!Number.isInteger(newVal)) {
     peopleNumberError.value = 'Can’t be decimal'
   } else {
@@ -132,42 +138,40 @@ const validatePeopleNumber = (newVal) => {
 
 const validateCustomTip = () => {
   if (customTip.value !== null && customTip.value < 0) {
-    customTip.value = null // Réinitialiser la valeur si elle est négative
+    customTip.value = null
   }
 }
 
-const resetCustomTip = () => {
-  customTip.value = null
-}
-
-const resetSelectedTip = () => {
-  selectedTip.value = null
-}
-
 const resetForm = () => {
-  bill.value = null
+  bill.value = 0
   selectedTip.value = null
   customTip.value = null
-  peopleNumber.value = null
-  peopleNumberError.value = null
-  billError.value = null
+  peopleNumber.value = 1
+  peopleNumberError.value = ''
+  billError.value = ''
   tipAmountPerPerson.value = 0
   totalAmountPerPerson.value = 0
 }
 
 const isFormIncomplete = computed(() => {
-  return !bill.value || (!selectedTip.value && !customTip.value) || !peopleNumber.value
+  return (
+    !bill.value ||
+    (!selectedTip.value && !customTip.value) ||
+    !peopleNumber.value ||
+    billError.value ||
+    peopleNumberError.value
+  )
 })
 
 watch(customTip, (newVal) => {
-  if (newVal) {
-    resetSelectedTip()
+  if (newVal !== null) {
+    selectedTip.value = null
   }
 })
 
 watch(selectedTip, (newVal) => {
-  if (newVal) {
-    resetCustomTip()
+  if (newVal !== null) {
+    customTip.value = null
   }
 })
 
@@ -236,6 +240,13 @@ legend {
   border: 2px solid transparent;
 }
 
+.bill-amount .error,
+.people-number .error,
+.bill-amount .error:focus,
+.people-number .error:focus {
+  border-color: var(--accent);
+}
+
 .bill-amount input {
   background-image: url(../assets/images/icon-dollar.svg);
 }
@@ -244,14 +255,14 @@ legend {
   background-image: url(../assets/images/icon-person.svg);
 }
 
-input[type='number'] {
-  appearance: textfield;
-}
-
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+input[type='number'] {
+  appearance: textfield;
 }
 
 .entries {
@@ -418,6 +429,10 @@ output {
   background-color: var(--disabled-bg);
   color: var(--disabled-color);
   cursor: not-allowed;
+}
+
+.error {
+  border-color: red;
 }
 
 @media (min-width: 37.5rem) {
